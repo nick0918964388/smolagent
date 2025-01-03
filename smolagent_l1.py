@@ -1,7 +1,8 @@
 from smolagents import CodeAgent,ToolCallingAgent, HfApiModel, PythonInterpreterTool
 from huggingface_hub import login
+from config import HF_API_KEY
 
-login("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")
+login(HF_API_KEY)
 
 model_id = "Qwen/Qwen2.5-Coder-32B-Instruct"
 
