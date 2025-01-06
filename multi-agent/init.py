@@ -4,11 +4,11 @@ from markdownify import markdownify
 from requests.exceptions import RequestException
 from smolagents import tool
 
-from config import HF_API_KEY
-from huggingface_hub import login
-login(HF_API_KEY)
+# from config import HF_API_KEY
+# from huggingface_hub import login
+# login(HF_API_KEY)
 
-model_id = "Qwen/Qwen2.5-Coder-32B-Instruct"
+# model_id = "Qwen/Qwen2.5-Coder-32B-Instruct"
 
 @tool
 def visit_webpage(url: str) -> str:

@@ -10,35 +10,33 @@ from sqlalchemy import (
     inspect,
     text,
 )
-from huggingface_hub import login
-from config import HF_API_KEY
 
-login(HF_API_KEY)
 
 engine = create_engine("sqlite:///:memory:")
 metadata_obj = MetaData()
 
 # create city SQL table
-table_name = "receipts"
-receipts = Table(
+table_name = "asset"
+asset = Table(
     table_name,
     metadata_obj,
-    Column("receipt_id", Integer, primary_key=True),
-    Column("customer_name", String(16), primary_key=True),
-    Column("price", Float),
-    Column("tip", Float),
+    Column("assetnum", String(20), primary_key=True),
+    Column("siteid", String(16), primary_key=True),    
+    Column("eq1", String(16)),
+    Column("deptid", String(16), foreign_key="dept.deptid"),
+    Column("eq3", String(16)),
+    Column("eq4", String(16)),
 )
 metadata_obj.create_all(engine)
 
 rows = [
-    {"receipt_id": 1, "customer_name": "Alan Payne", "price": 12.06, "tip": 1.20},
-    {"receipt_id": 2, "customer_name": "Alex Mason", "price": 23, "tip": 0.24},
-    {"receipt_id": 5, "customer_name": "Alex Mason", "price": 23, "tip": 0.24},
-    {"receipt_id": 3, "customer_name": "Woodrow Wilson", "price": 53.43, "tip": 5.43},
-    {"receipt_id": 4, "customer_name": "Margaret James", "price": 21.11, "tip": 1.00},
+    {"assetnum": "EMU901", "siteid": "TRATW", "eq1": "WAY00", "deptid": "MGY00", "eq3": "EMU", "eq4": "EMU900"},
+    {"assetnum": "EMU902", "siteid": "TRATW", "eq1": "WAY00", "deptid": "MGY00", "eq3": "EMU", "eq4": "EMU900"},
+    {"assetnum": "EMU903", "siteid": "TRATW", "eq1": "WAY00", "deptid": "MHY10", "eq3": "EMU", "eq4": "EMU900"},
+    {"assetnum": "EMU904", "siteid": "TRATW", "eq1": "WAY00", "deptid": "MHY10", "eq3": "EMU", "eq4": "EMU900"},
 ]
 for row in rows:
-    stmt = insert(receipts).values(**row)
+    stmt = insert(asset).values(**row)
     with engine.begin() as connection:
         cursor = connection.execute(stmt)
 
@@ -48,23 +46,21 @@ for row in rows:
 # table_description = "Columns:\n" + "\n".join([f"  - {name}: {col_type}" for name, col_type in columns_info])
 # print(table_description)
 
-table_name = "waiters"
-waiters = Table(
+table_name = "dept"
+dept = Table(
     table_name,
     metadata_obj,
-    Column("receipt_id", Integer, primary_key=True),
-    Column("waiter_name", String(16), primary_key=True),
+    Column("deptid", String(16), primary_key=True),
+    Column("description", String(50)),
 )
 metadata_obj.create_all(engine)
 
 rows = [
-    {"receipt_id": 1, "waiter_name": "Corey Johnson"},
-    {"receipt_id": 2, "waiter_name": "Michael Watts"},
-    {"receipt_id": 3, "waiter_name": "Michael Watts"},
-    {"receipt_id": 4, "waiter_name": "Margaret James"},
+    {"deptid": "MGY00", "description": "七堵機務段"},
+    {"deptid": "MHY10", "description": "新竹機務段"},
 ]
 for row in rows:
-    stmt = insert(waiters).values(**row)
+    stmt = insert(dept).values(**row)
     with engine.begin() as connection:
         cursor = connection.execute(stmt)
 
@@ -73,7 +69,7 @@ updated_description = """Allows you to perform SQL queries on the table. Beware 
 It can use the following tables:"""
 
 inspector = inspect(engine)
-for table in ["receipts", "waiters"]:
+for table in ["asset", "dept"]:
     columns_info = [(col["name"], col["type"]) for col in inspector.get_columns(table)]
 
     table_description = f"Table '{table}':\n"

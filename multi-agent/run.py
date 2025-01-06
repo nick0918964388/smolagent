@@ -4,6 +4,7 @@ from smolagents import (
     ManagedAgent,
     DuckDuckGoSearchTool,
     LiteLLMModel,
+    GradioUI
 )
 from init import visit_webpage
 
@@ -33,4 +34,9 @@ manager_agent = CodeAgent(
 )
 
 #answer = manager_agent.run("If LLM trainings continue to scale up at the current rythm until 2030, what would be the electric power in GW required to power the biggest training runs by 2030? What does that correspond to, compared to some contries? Please provide a source for any number used.")
-answer = manager_agent.run("請幫我解釋一下Oracle 備份機制? Please provide a source for any number used. 請用繁體中文回覆")
+answer = manager_agent.run("台灣最高的山? Please provide a source for any number used. 請用繁體中文回覆")
+
+# if __name__ == "__main__":
+#     ui = GradioUI(
+#         manager_agent
+#     ).launch()
