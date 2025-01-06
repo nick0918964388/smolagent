@@ -1,6 +1,30 @@
 from init import engine,updated_description
-from smolagents import CodeAgent, LiteLLMModel ,GradioUI
+from smolagents import CodeAgent, LiteLLMModel, GradioUI
 from sqltool import sql_engine
+import gradio as gr
+
+class CustomGradioUI(GradioUI):
+    def launch(self, **kwargs):
+        with gr.Blocks() as demo:
+            stored_message = gr.State([])
+            chatbot = gr.Chatbot(
+                label="Agent",
+                type="messages",
+                avatar_images=(
+                    None,
+                    "https://em-content.zobj.net/source/twitter/53/robot-face_1f916.png",
+                ),
+            )
+            text_input = gr.Textbox(lines=1, label="Chat Message")
+            text_input.submit(
+                lambda s: (s, ""), [text_input], [stored_message, text_input]
+            ).then(self.interact_with_agent, [stored_message, chatbot], [chatbot])
+
+        demo.launch(
+            server_name="0.0.0.0",  # 允許外部訪問
+            share=True,             # 啟用分享功能
+            **kwargs
+        )
 
 sql_engine.description = updated_description
 
@@ -19,4 +43,4 @@ agent = CodeAgent(
 # agent.run("Alex Mason's total price?")
 # agent.run("Which receipt got more total money from price and tip?")
 # agent.run("請給我新竹機務段所有資產 , 新竹機務段是部門名稱 , 請用繁體中文回覆")
-GradioUI(agent).launch()
+CustomGradioUI(agent).launch()
