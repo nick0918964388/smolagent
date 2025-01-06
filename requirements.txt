@@ -1,4 +1,8 @@
 smolagents
 huggingface-hub
 accelerate
-sqlalchemy
+pyodbc
+python-dotenv
+markdownify
+ipywidgets
+chainlit

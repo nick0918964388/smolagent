@@ -1,0 +1,24 @@
+[project]
+# 介面標題
+name = "AI Search Assistant"
+# 介面說明
+description = "一個可以幫助您搜尋網路資訊的AI助手"
+
+[UI]
+# Name of the assistant
+name = "AI Assistant"
+# Description of the assistant
+description = "使用 Qwen 模型的智能助手"
+# Theme
+default_theme = "light"
+# Layout
+layout = "wide"
+
+[features]
+# 啟用 Markdown 支援
+process_markdown = true
+# 允許使用者編輯訊息
+edit_message = true
+# 允許上傳檔案
+[features.file_upload]
+enabled = true

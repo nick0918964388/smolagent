@@ -10,6 +10,7 @@ from sqlalchemy import (
     inspect,
     text,
 )
+from config import HF_API_KEY
 
 engine = create_engine("sqlite:///:memory:")
 metadata_obj = MetaData()

@@ -10,6 +10,10 @@ from sqlalchemy import (
     inspect,
     text,
 )
+from huggingface_hub import login
+from config import HF_API_KEY
+
+login(HF_API_KEY)
 
 engine = create_engine("sqlite:///:memory:")
 metadata_obj = MetaData()
@@ -45,7 +49,7 @@ for row in rows:
 # print(table_description)
 
 table_name = "waiters"
-receipts = Table(
+waiters = Table(
     table_name,
     metadata_obj,
     Column("receipt_id", Integer, primary_key=True),
@@ -60,7 +64,7 @@ rows = [
     {"receipt_id": 4, "waiter_name": "Margaret James"},
 ]
 for row in rows:
-    stmt = insert(receipts).values(**row)
+    stmt = insert(waiters).values(**row)
     with engine.begin() as connection:
         cursor = connection.execute(stmt)
 
@@ -78,3 +82,5 @@ for table in ["receipts", "waiters"]:
     updated_description += "\n\n" + table_description
 
 print(updated_description)
+
+        
