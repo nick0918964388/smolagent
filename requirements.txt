@@ -6,3 +6,4 @@ python-dotenv
 markdownify
 ipywidgets
 chainlit
+sqlalchemy
