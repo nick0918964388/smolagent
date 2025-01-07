@@ -1,5 +1,5 @@
 import datetime
-from smolagents import tool,CodeAgent, HfApiModel, DuckDuckGoSearchTool, ManagedAgent ,GradioUI
+from smolagents import tool,CodeAgent, HfApiModel, DuckDuckGoSearchTool, ManagedAgent ,GradioUI , LiteLLMModel
 
 
 
@@ -29,7 +29,8 @@ def get_weather_api(location: str, date_time: str) -> str:
     return f"Weather report for {location}, {date_time}: Temperature will be {temperature_celsius}°C, risk of rain is {risk_of_rain*100:.0f}%, wave height is {wave_height}m."
 
 
-model = HfApiModel()
+# model = HfApiModel()
+model = LiteLLMModel(model_id="gpt-4o")
 web_agent = CodeAgent(tools=[get_weather_api], model=model,planning_interval=3)
 
 managed_web_agent = ManagedAgent(

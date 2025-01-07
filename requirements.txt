@@ -7,3 +7,6 @@ markdownify
 ipywidgets
 chainlit
 sqlalchemy
+fastapi
+uvicorn
+pydantic
