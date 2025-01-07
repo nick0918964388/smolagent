@@ -85,6 +85,8 @@ for table in ["asset", "dept"]:
     
     updated_description += "\n\n" + table_description.rstrip()
 
+    updated_description += "\n\n" + "機務段是部門名稱 , 資產編號表示車號"
+
 print(updated_description)
 
         
