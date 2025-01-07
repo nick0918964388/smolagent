@@ -1,3 +1,4 @@
 config.py
 text-to-sql/config.py 
 __pycache__/
+*.pyc
