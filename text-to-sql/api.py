@@ -9,15 +9,15 @@ sys.path.append(str(Path(__file__).parent.parent))
 from fastapi import FastAPI, HTTPException
 from fastapi.responses import StreamingResponse
 from pydantic import BaseModel
-from init import engine, updated_description
+from init_db2 import engine, updated_description
 from smolagents import CodeAgent, LiteLLMModel
-from sqltool import sql_engine
+from sqltool import sql_engine_db2
 
 # 初始化 FastAPI
 app = FastAPI()
 
 # 設定 SQL 引擎描述
-sql_engine.description = updated_description
+sql_engine_db2.description = updated_description
 
 # 初始化模型
 model = LiteLLMModel(
@@ -28,7 +28,7 @@ model = LiteLLMModel(
 
 # 初始化 agent
 agent = CodeAgent(
-    tools=[sql_engine],
+    tools=[sql_engine_db2],
     model=model,
     max_iterations=10,
 )

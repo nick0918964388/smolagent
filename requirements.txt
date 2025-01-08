@@ -10,3 +10,4 @@ sqlalchemy
 fastapi
 uvicorn
 pydantic
+pyodbc

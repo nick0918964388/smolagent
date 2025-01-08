@@ -1,73 +1,73 @@
-import pyodbc
+import os
+import sys
 
-# 連接字串
-conn_str = (
-    "DRIVER={IBM DB2 ODBC DRIVER};"
-    "DATABASE=maxdb76;"
-    "HOSTNAME=10.10.10.115;"
-    "PORT=50005;"
-    "PROTOCOL=TCPIP;"
-    "UID=maximo;"
-    "PWD=maximo;"
+
+# 设置系统编码
+if sys.platform.startswith('win'):
+    os.add_dll_directory(r"C:\Program Files\IBM\SQLLIB\BIN")
+
+import ibm_db
+
+# DB2数据库连接配置
+connection_string = (
+    'DATABASE=maxdb76;'
+    'HOSTNAME=10.10.10.115;'
+    'PORT=50005;'
+    'PROTOCOL=TCPIP;'
+    'UID=maximo;'
+    'PWD=maximo;'
+    'CURRENTSCHEMA=MAXIMO;'
 )
 
-try:
-    conn = pyodbc.connect(conn_str)
-    cursor = conn.cursor()
-    
-    # 生成表描述
-    updated_description = """允許您對DB2數據庫執行SQL查詢。請注意，此工具的輸出是執行結果的字符串表示。
-    可以使用以下表格："""
+# 定义表结构
+TABLES_SCHEMA = {
+    'ASSET': {
+        'ASSETNUM': {'type': 'VARCHAR(20)', 'comment': '資產編號'},
+        'SITEID': {'type': 'VARCHAR(16)', 'comment': '站點代碼'},
+        'EQ1': {'type': 'VARCHAR(16)', 'comment': '設備類型', 'alias': 'REPAIRFAC'},
+        'EQ2': {'type': 'VARCHAR(16)', 'comment': '部門代碼', 'alias': 'DEPARTMENT'}
+    },
+    'ZZ_DEPT': {
+        'DEPARTMENT': {'type': 'VARCHAR(16)', 'comment': '部門代碼'},
+        'DESCRIPTION': {'type': 'VARCHAR(50)', 'comment': '部門名稱'}
+    }
+}
 
-    # 使用 DB2 系統表查詢表結構
-    schema = 'MAXIMO'
-    table_query = """
-    SELECT TABNAME, COLNAME, TYPENAME, LENGTH, SCALE
-    FROM SYSCAT.COLUMNS 
-    WHERE TABSCHEMA = ? and TABNAME = 'ASSET' and COLNAME in ('ASSETNUM','SITEID','EQ1','EQ2','EQ3','EQ4')
-    ORDER BY TABNAME
-    """
+try:
+    # 使用ibm_db直接连接
+    conn = ibm_db.connect(connection_string, '', '')
     
-    cursor.execute(table_query, (schema,))
-    columns_data = cursor.fetchall()
-    
-    # 整理表格資訊
-    table_info = {}
-    for row in columns_data:
-        table_name = row[0]
-        column_name = row[1]
-        data_type = row[2]
-        length = row[3]
-        scale = row[4]
+    # 初始化updated_description
+    updated_description = """Allows you to perform SQL queries on the table. Beware that this tool's output is a string representation of the execution output.
+It can use the following tables:"""
+
+    # 遍历所有表生成描述
+    for table_name, columns in TABLES_SCHEMA.items():
+        table_description = f"\n\nTable '{table_name}':\nColumns:\n"
         
-        if table_name not in table_info:
-            table_info[table_name] = []
+        for col_name, col_info in columns.items():
+            # 组合注释信息
+            comments = []
+            if 'alias' in col_info:
+                comments.append(f"as {col_info['alias']}")
+            if col_info['comment']:
+                comments.append(col_info['comment'])
             
-        # 格式化數據類型
-        if data_type in ('VARCHAR', 'CHAR'):
-            type_desc = f"{data_type}({length})"
-        elif data_type == 'DECIMAL':
-            type_desc = f"{data_type}({length},{scale})"
-        else:
-            type_desc = data_type
-            
-        table_info[table_name].append((column_name, type_desc))
+            comment_str = ' | '.join(comments) if comments else 'No comment'
+            table_description += f"  - {col_name}: {col_info['type']} ({comment_str})\n"
+        
+        updated_description += table_description.rstrip()
     
-    # 生成描述文本
-    for table_name, columns in table_info.items():
-        table_description = f"\n表格 '{table_name}':\n"
-        table_description += "欄位:\n" + "\n".join(
-            [f"  - {name}: {col_type}" for name, col_type in columns]
-        )
-        updated_description += table_description
+    # 添加额外说明
+    updated_description += "\n\n機務段是部門名稱 , 資產編號表示車號"
     
     print(updated_description)
 
-except pyodbc.Error as e:
-    print(f"連接或查詢DB2時發生錯誤: {str(e)}")
-
+except Exception as e:
+    print(f"连接或查询DB2时发生错误: {str(e)}")
 finally:
-    if 'cursor' in locals():
-        cursor.close()
-    if 'conn' in locals():
-        conn.close() 
+    try:
+        if 'conn' in locals():
+            ibm_db.close(conn)
+    except Exception as e:
+        print(f"关闭连接时发生错误: {str(e)}") 
