@@ -1,10 +1,16 @@
 import os
 import sys
 
-
-# 设置系统编码
+# 根据操作系统设置DB2环境
 if sys.platform.startswith('win'):
+    # Windows系统
     os.add_dll_directory(r"C:\Program Files\IBM\SQLLIB\BIN")
+elif sys.platform.startswith('linux'):
+    # Linux系统
+    # 设置DB2环境变量
+    os.environ['DB2_HOME'] = '/opt/ibm/db2/V11.5'
+    os.environ['LD_LIBRARY_PATH'] = '/opt/ibm/db2/V11.5/lib64'
+    os.environ['DB2LIB'] = '/opt/ibm/db2/V11.5/lib64'
 
 import ibm_db
 
