@@ -80,7 +80,11 @@ def sql_engine_db2_asset(query: str) -> str:
 @tool
 def sql_engine_db2_carava(query: str) -> str:
     """
-    
+    Allows you to perform SQL queries on the DB2 database. Returns a string representation of the result.
+    The tables are:        
+        Table 'ZZ_V_DAILYDYNAMIC':
+    Args:
+        query: The query to perform. This should be correct SQL.
     """
     # DB2数据库连接配置
     connection_string = (
