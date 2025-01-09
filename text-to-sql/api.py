@@ -11,12 +11,21 @@ from fastapi.responses import StreamingResponse
 from pydantic import BaseModel
 from init_asset import asset_description
 from init_carava import carava_description
-from smolagents import CodeAgent, LiteLLMModel , ManagedAgent
+from smolagents import CodeAgent, LiteLLMModel, ManagedAgent
 from sqltool import sql_engine_db2_asset, sql_engine_db2_carava
 from huggingface_hub import login
-from config import HF_API_KEY
 
-login(HF_API_KEY)
+# 修改導入路徑
+try:
+    from text_to_sql.config import HF_API_KEY  # 先嘗試從 text-to-sql 目錄導入
+except ImportError:
+    try:
+        from config import HF_API_KEY  # 再嘗試從根目錄導入
+    except ImportError:
+        HF_API_KEY = None  # 如果都找不到，設為 None
+
+if HF_API_KEY:
+    login(HF_API_KEY)
 
 # 初始化 FastAPI
 app = FastAPI()
@@ -24,17 +33,16 @@ app = FastAPI()
 # 設定 SQL 引擎描述
 sql_engine_db2_asset.description = asset_description
 sql_engine_db2_carava.description = carava_description
-# sql_engine_db2.description = updated_description
 
 # 初始化模型
-# model = LiteLLMModel(
-#     model_id="ollama/qwen2.5-coder-extra:latest",
-#     api_base="http://ollama.webtw.xyz:11434",
-#     api_key="ollama"    
-# )
-
-# model = LiteLLMModel(model_id="groq/llama3-70b-8192")
-model = LiteLLMModel(model_id="qwen/qwen2.5-coder-32b-instruct")
+model = LiteLLMModel(
+    model_id="qwen/qwen2.5-coder-32b-instruct",
+    **{
+        "temperature": 0.0,
+        "max_tokens": 2000,
+        "top_p": 0.9
+    }
+)
 
 # 初始化 agent
 asset_agent = CodeAgent(
