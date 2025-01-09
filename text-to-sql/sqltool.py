@@ -25,7 +25,7 @@ def sql_engine(query: str) -> str:
     return output
 
 @tool
-def sql_engine_db2(query: str) -> str:
+def sql_engine_db2_asset(query: str) -> str:
     """
     Allows you to perform SQL queries on the DB2 database. Returns a string representation of the result.
     The tables are:
@@ -41,6 +41,46 @@ def sql_engine_db2(query: str) -> str:
 
     Args:
         query: The query to perform. This should be correct SQL.
+    """
+    # DB2数据库连接配置
+    connection_string = (
+        'DATABASE=maxdb76;'
+        'HOSTNAME=10.10.10.115;'
+        'PORT=50005;'
+        'PROTOCOL=TCPIP;'
+        'UID=maximo;'
+        'PWD=maximo;'
+        'CURRENTSCHEMA=MAXIMO;'
+    )
+    
+    output = ""
+    try:
+        # 连接到DB2
+        conn = ibm_db.connect(connection_string, '', '')
+        
+        # 执行查询
+        stmt = ibm_db.exec_immediate(conn, query)
+        
+        # 获取结果
+        result = ibm_db.fetch_assoc(stmt)
+        while result:
+            # 将字典转换为字符串并添加到输出
+            row_str = ", ".join([f"{k}: {v}" for k, v in result.items()])
+            output += "\n" + row_str
+            result = ibm_db.fetch_assoc(stmt)
+            
+    except Exception as e:
+        output = f"查询错误: {str(e)}"
+    finally:
+        if 'conn' in locals():
+            ibm_db.close(conn)
+            
+    return output
+
+@tool
+def sql_engine_db2_carava(query: str) -> str:
+    """
+    
     """
     # DB2数据库连接配置
     connection_string = (
