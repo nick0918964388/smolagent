@@ -41,8 +41,9 @@ sql_engine_db2_carava.description = carava_description
 #     api_key="ollama"    
 # )
 
+model = LiteLLMModel(model_id="openai/gpt-4o")
 # model = LiteLLMModel(model_id="groq/llama3-70b-8192")
-model = HfApiModel(model_id="qwen/qwen2.5-coder-32b-instruct")
+#model = HfApiModel(model_id="qwen/qwen2.5-coder-32b-instruct")
 
 # 初始化 agent
 asset_agent = CodeAgent(
