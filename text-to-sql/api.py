@@ -35,13 +35,13 @@ sql_engine_db2_asset.description = asset_description
 sql_engine_db2_carava.description = carava_description
 
 # 初始化模型
-# model = LiteLLMModel(
-#     model_id="ollama/qwen2.5-coder-extra:latest",
-#     api_base="http://ollama.webtw.xyz:11434",
-#     api_key="ollama"    
-# )
+model = LiteLLMModel(
+    model_id="ollama/qwen2.5-coder-extra:latest",
+    api_base="http://ollama.webtw.xyz:11434",
+    api_key="ollama"    
+)
 
-model = LiteLLMModel(model_id="openai/gpt-4o")
+# model = LiteLLMModel(model_id="openai/gpt-4o")
 # model = LiteLLMModel(model_id="groq/llama3-70b-8192")
 #model = HfApiModel(model_id="qwen/qwen2.5-coder-32b-instruct")
 
