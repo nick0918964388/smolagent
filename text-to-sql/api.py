@@ -29,7 +29,8 @@ sql_engine_db2_carava.description = carava_description
 #     api_base="http://ollama.webtw.xyz:11434",
 #     api_key="ollama"    
 # )
-model = LiteLLMModel(model_id="groq/llama3-70b-8192")
+# model = LiteLLMModel(model_id="groq/llama3-70b-8192")
+model = LiteLLMModel(model_id="github/llama3-70b-8192")
 
 # 初始化 agent
 asset_agent = CodeAgent(
