@@ -86,7 +86,7 @@ async def stream_generator(query: str) -> AsyncGenerator[str, None]:
         # 發送初始連接建立消息
         yield "data: {\"type\": \"connected\"}\n\n"
         
-        for chunk in asset_agent.run(query, stream=True):
+        for chunk in manager_agent.run(query, stream=True):
             if hasattr(chunk, 'iteration'):  # ActionStep
                 step_data = {
                     "type": "step",
@@ -136,7 +136,7 @@ async def stream_query(request: QueryRequest):
 @app.post("/query")
 async def process_query(request: QueryRequest):
     try:
-        response = asset_agent.run(request.query, stream=False  )
+        response = manager_agent.run(request.query, stream=False  )
 
         return {"response": response ,"logs":asset_agent.logs}
     except Exception as e:
