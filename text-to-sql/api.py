@@ -9,16 +9,17 @@ sys.path.append(str(Path(__file__).parent.parent))
 from fastapi import FastAPI, HTTPException
 from fastapi.responses import StreamingResponse
 from pydantic import BaseModel
-from init_asset import updated_description
+from init_asset import asset_description
+from init_carava import carava_description
 from smolagents import CodeAgent, LiteLLMModel , ManagedAgent
-from sqltool import sql_engine_db2_asset , sql_engine_db2_caravaliable
+from sqltool import sql_engine_db2
 
 # 初始化 FastAPI
 app = FastAPI()
 
 # 設定 SQL 引擎描述
-sql_engine_db2_asset.description = updated_description
-sql_engine_db2_caravaliable.description = updated_description
+# sql_engine_db2.description = updated_description
+# sql_engine_db2.description = updated_description
 
 # 初始化模型
 model = LiteLLMModel(
@@ -30,9 +31,10 @@ model = LiteLLMModel(
 
 # 初始化 agent
 asset_agent = CodeAgent(
-    tools=[sql_engine_db2_asset],
+    tools=[sql_engine_db2],
     model=model,
     max_iterations=10,
+    description=asset_description,
 )
 managed_asset_agent = ManagedAgent(
     agent=asset_agent,
@@ -41,9 +43,10 @@ managed_asset_agent = ManagedAgent(
 )
 
 car_avaliable_agent = CodeAgent(
-    tools=[sql_engine_db2_caravaliable],
+    tools=[sql_engine_db2],
     model=model,
     max_iterations=10,
+    description=carava_description,
 )
 
 managed_car_avaliable_agent = ManagedAgent(
