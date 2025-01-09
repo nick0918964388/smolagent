@@ -13,6 +13,7 @@ from init_asset import asset_description
 from init_carava import carava_description
 from smolagents import CodeAgent, LiteLLMModel , ManagedAgent
 from sqltool import sql_engine_db2_asset, sql_engine_db2_carava
+from huggingface_hub import login
 from config import HF_API_KEY
 
 login(HF_API_KEY)
