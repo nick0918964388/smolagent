@@ -43,7 +43,7 @@ It can use the following tables:"""
         carava_description += table_description.rstrip()
     
     # 添加额外说明
-    carava_description += "\n\n 各車型一筆資料 車型為EMU100 EMU200 EMU300 TEMU1000 TEMU2000 EMU3000 等資料"
+    carava_description += "\n\n 配置數量、借出數量、借入數量、現有數量、定期數量、段修數量、待料待修數量、無火迴送數量、停用數量、備註 的相關查詢"
     
     print(carava_description)
 
