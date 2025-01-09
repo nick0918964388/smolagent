@@ -18,7 +18,7 @@ from sqltool import sql_engine_db2
 app = FastAPI()
 
 # 設定 SQL 引擎描述
-# sql_engine_db2.description = updated_description
+sql_engine_db2.description = updated_description
 # sql_engine_db2.description = updated_description
 
 # 初始化模型
@@ -34,30 +34,30 @@ asset_agent = CodeAgent(
     model=model,
     max_iterations=10
 )
-managed_asset_agent = ManagedAgent(
-    agent=asset_agent,
-    name="query_asset",
-    description=asset_description + " \n\n 查詢資產(車輛相關數量)資料",
-)
+# managed_asset_agent = ManagedAgent(
+#     agent=asset_agent,
+#     name="query_asset",
+#     description=asset_description + " \n\n 查詢資產(車輛相關數量)資料",
+# )
 
-car_avaliable_agent = CodeAgent(
-    tools=[sql_engine_db2],
-    model=model,
-    max_iterations=10,    
-)
+# car_avaliable_agent = CodeAgent(
+#     tools=[sql_engine_db2],
+#     model=model,
+#     max_iterations=10,    
+# )
 
-managed_car_avaliable_agent = ManagedAgent(
-    agent=car_avaliable_agent,
-    name="query_car_avaliable",
-    description=carava_description + " \n\n 查詢車輛配屬數量、借入數量、現有數量、定期數量、段修數量、待料待修數量、無火迴送數量、停用數量、備註",
-)
+# managed_car_avaliable_agent = ManagedAgent(
+#     agent=car_avaliable_agent,
+#     name="query_car_avaliable",
+#     description=carava_description + " \n\n 查詢車輛配屬數量、借入數量、現有數量、定期數量、段修數量、待料待修數量、無火迴送數量、停用數量、備註",
+# )
 
-manager_agent = CodeAgent(
-    tools=[],
-    model=model,
-    managed_agents=[managed_asset_agent,managed_car_avaliable_agent],
-    additional_authorized_imports=["time", "numpy", "pandas"],
-)
+# manager_agent = CodeAgent(
+#     tools=[],
+#     model=model,
+#     managed_agents=[managed_asset_agent,managed_car_avaliable_agent],
+#     additional_authorized_imports=["time", "numpy", "pandas"],
+# )
 
 # 定義請求模型
 class QueryRequest(BaseModel):
@@ -69,7 +69,7 @@ async def stream_generator(query: str) -> AsyncGenerator[str, None]:
         # 發送初始連接建立消息
         yield "data: {\"type\": \"connected\"}\n\n"
         
-        for chunk in manager_agent.run(query, stream=True):
+        for chunk in asset_agent.run(query, stream=True):
             if hasattr(chunk, 'iteration'):  # ActionStep
                 step_data = {
                     "type": "step",
@@ -119,9 +119,9 @@ async def stream_query(request: QueryRequest):
 @app.post("/query")
 async def process_query(request: QueryRequest):
     try:
-        response = manager_agent.run(request.query, stream=False  )
+        response = asset_agent.run(request.query, stream=False  )
 
-        return {"response": response ,"logs":manager_agent.logs}
+        return {"response": response ,"logs":asset_agent.logs}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
