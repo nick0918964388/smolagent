@@ -40,10 +40,11 @@ class QueryRequest(BaseModel):
 
 async def stream_generator(query: str) -> AsyncGenerator[str, None]:
     try:
+        # 發送初始連接建立消息
+        yield "data: {\"type\": \"connected\"}\n\n"
+        
         for chunk in agent.run(query, stream=True):
-            # 將每個步驟轉換為 JSON 格式
-            if hasattr(chunk, 'iteration'):  # 檢查是否為 ActionStep
-                # 處理 ActionStep 物件
+            if hasattr(chunk, 'iteration'):  # ActionStep
                 step_data = {
                     "type": "step",
                     "step_number": chunk.iteration,
@@ -55,20 +56,24 @@ async def stream_generator(query: str) -> AsyncGenerator[str, None]:
                     "start_time": chunk.start_time,
                     "end_time": chunk.end_time,
                 }
-                yield f"data: {json.dumps(step_data)}\n\n"
+                # 確保每條消息以data:開頭，並以兩個換行結束
+                yield f"data: {json.dumps(step_data, ensure_ascii=False)}\n\n"
             else:
-                # 處理 AgentText 或其他類型的輸出
                 final_data = {
                     "type": "message",
                     "content": str(chunk)
                 }
-                yield f"data: {json.dumps(final_data)}\n\n"
+                yield f"data: {json.dumps(final_data, ensure_ascii=False)}\n\n"
+                
+        # 發送結束消息
+        yield "data: {\"type\": \"done\"}\n\n"
+            
     except Exception as e:
         error_data = {
             "type": "error",
             "error": str(e)
         }
-        yield f"data: {json.dumps(error_data)}\n\n"
+        yield f"data: {json.dumps(error_data, ensure_ascii=False)}\n\n"
 
 @app.post("/query/stream")
 async def stream_query(request: QueryRequest):
@@ -76,8 +81,11 @@ async def stream_query(request: QueryRequest):
         stream_generator(request.query),
         media_type="text/event-stream",
         headers={
-            'Cache-Control': 'no-cache',
+            'Cache-Control': 'no-cache, no-transform',
             'Connection': 'keep-alive',
+            'X-Accel-Buffering': 'no',  # 禁用Nginx緩衝
+            'Content-Type': 'text/event-stream; charset=utf-8',
+            'Access-Control-Allow-Origin': '*',  # 如果需要CORS
         }
     )
 
