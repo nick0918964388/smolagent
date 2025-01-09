@@ -10,9 +10,16 @@ model = LiteLLMModel(
     model_id="ollama/qwen2.5-coder-extra:latest",
     api_base="http://ollama.webtw.xyz:11434",
     api_key="ollama",
+    temperature=0.7,
+    max_tokens=2000,
+    top_p=0.9,
 )
 
-web_agent = CodeAgent(tools=[DuckDuckGoSearchTool()], model=model)
+web_agent = CodeAgent(
+    tools=[DuckDuckGoSearchTool()],
+    model=model,
+    temperature=0.7
+)
 
 managed_web_agent = ManagedAgent(
     agent=web_agent,
