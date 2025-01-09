@@ -1,4 +1,4 @@
-from init_db2 import updated_description
+from init_asset import updated_description
 from smolagents import CodeAgent, LiteLLMModel, GradioUI
 from sqltool import sql_engine_db2
 import gradio as gr
