@@ -26,7 +26,9 @@ model = LiteLLMModel(
     model_id="ollama/qwen2.5-coder-extra:latest",
     api_base="http://ollama.webtw.xyz:11434",
     api_key="ollama",
-    max_tokens=4096
+    model_kwargs={
+        "temperature":0.0,
+    }
 )
 
 # 初始化 agent

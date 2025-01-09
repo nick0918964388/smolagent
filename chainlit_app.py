@@ -11,8 +11,12 @@ model = LiteLLMModel(
     api_base="http://ollama.webtw.xyz:11434",
     api_key="ollama",
     temperature=0.7,
-    max_tokens=2000,
-    top_p=0.9,
+    # Ollama 特定參數
+    model_kwargs={
+        "max_tokens": 2000,
+        "top_p": 0.9,
+        "stop": ["\n\n"],  # 可選的停止序列
+    }
 )
 
 web_agent = CodeAgent(
