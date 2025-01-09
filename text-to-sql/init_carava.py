@@ -22,7 +22,7 @@ TABLES_SCHEMA = {
 
 try:
     # 初始化updated_description
-    updated_description = """Allows you to perform SQL queries on the table. Beware that this tool's output is a string representation of the execution output.
+    carava_description = """Allows you to perform SQL queries on the table. Beware that this tool's output is a string representation of the execution output.
 It can use the following tables:"""
 
     # 遍历所有表生成描述
@@ -40,12 +40,12 @@ It can use the following tables:"""
             comment_str = ' | '.join(comments) if comments else 'No comment'
             table_description += f"  - {col_name}: {col_info['type']} ({comment_str})\n"
         
-        updated_description += table_description.rstrip()
+        carava_description += table_description.rstrip()
     
     # 添加额外说明
-    updated_description += "\n\n 各車型一筆資料 車型為EMU100 EMU200 EMU300 TEMU1000 TEMU2000 EMU3000 等資料"
+    carava_description += "\n\n 各車型一筆資料 車型為EMU100 EMU200 EMU300 TEMU1000 TEMU2000 EMU3000 等資料"
     
-    print(updated_description)
+    print(carava_description)
 
 except Exception as e:
     print(f"连接或查询DB2时发生错误: {str(e)}")

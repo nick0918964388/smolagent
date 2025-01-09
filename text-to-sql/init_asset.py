@@ -44,7 +44,7 @@ try:
     conn = ibm_db.connect(connection_string, '', '')
     
     # 初始化updated_description
-    updated_description = """Allows you to perform SQL queries on the table. Beware that this tool's output is a string representation of the execution output.
+    asset_description = """Allows you to perform SQL queries on the table. Beware that this tool's output is a string representation of the execution output.
 It can use the following tables:"""
 
     # 遍历所有表生成描述
@@ -62,12 +62,12 @@ It can use the following tables:"""
             comment_str = ' | '.join(comments) if comments else 'No comment'
             table_description += f"  - {col_name}: {col_info['type']} ({comment_str})\n"
         
-        updated_description += table_description.rstrip()
+        asset_description += table_description.rstrip()
     
     # 添加额外说明
-    updated_description += "\n\n機務段是部門名稱 , 資產編號表示車號"
+    asset_description += "\n\n機務段是部門名稱 , 資產編號表示車號"
     
-    print(updated_description)
+    print(asset_description)
 
 except Exception as e:
     print(f"连接或查询DB2时发生错误: {str(e)}")
