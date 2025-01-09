@@ -22,12 +22,12 @@ sql_engine_db2.description = asset_description
 # sql_engine_db2.description = updated_description
 
 # 初始化模型
-model = LiteLLMModel(
-    model_id="ollama/qwen2.5-coder-extra:latest",
-    api_base="http://ollama.webtw.xyz:11434",
-    api_key="ollama",
-    temperature=0.0
-)
+# model = LiteLLMModel(
+#     model_id="ollama/qwen2.5-coder-extra:latest",
+#     api_base="http://ollama.webtw.xyz:11434",
+#     api_key="ollama"    
+# )
+model = LiteLLMModel("opanai/gpt-4o")
 
 # 初始化 agent
 asset_agent = CodeAgent(
