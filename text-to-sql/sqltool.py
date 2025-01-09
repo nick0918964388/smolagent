@@ -1,5 +1,4 @@
 # from init import engine
-import init_db2
 from sqlalchemy import text
 from smolagents import tool
 import ibm_db
