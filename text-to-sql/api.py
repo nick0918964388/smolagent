@@ -27,7 +27,7 @@ sql_engine_db2.description = asset_description
 #     api_base="http://ollama.webtw.xyz:11434",
 #     api_key="ollama"    
 # )
-model = LiteLLMModel(model_id="opanai/gpt-4o")
+model = LiteLLMModel(model_id="openai/gpt-4o")
 
 # 初始化 agent
 asset_agent = CodeAgent(
