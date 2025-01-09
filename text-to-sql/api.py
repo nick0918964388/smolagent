@@ -25,7 +25,8 @@ sql_engine_db2.description = asset_description
 model = LiteLLMModel(
     model_id="ollama/qwen2.5-coder-extra:latest",
     api_base="http://ollama.webtw.xyz:11434",
-    api_key="ollama"
+    api_key="ollama",
+    temperature=0
 )
 
 # 初始化 agent
