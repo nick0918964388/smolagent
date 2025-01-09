@@ -13,7 +13,9 @@ from init_asset import asset_description
 from init_carava import carava_description
 from smolagents import CodeAgent, LiteLLMModel , ManagedAgent
 from sqltool import sql_engine_db2_asset, sql_engine_db2_carava
+from config import HF_API_KEY
 
+login(HF_API_KEY)
 
 # 初始化 FastAPI
 app = FastAPI()
@@ -29,8 +31,9 @@ sql_engine_db2_carava.description = carava_description
 #     api_base="http://ollama.webtw.xyz:11434",
 #     api_key="ollama"    
 # )
+
 # model = LiteLLMModel(model_id="groq/llama3-70b-8192")
-model = LiteLLMModel(model_id="nvidia_nim/google/codegemma-1.1-7b")
+model = LiteLLMModel(model_id="qwen/qwen2.5-coder-32b-instruct")
 
 # 初始化 agent
 asset_agent = CodeAgent(
