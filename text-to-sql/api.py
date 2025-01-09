@@ -11,7 +11,7 @@ from fastapi.responses import StreamingResponse
 from pydantic import BaseModel
 from init_asset import asset_description
 from init_carava import carava_description
-from smolagents import CodeAgent, LiteLLMModel, ManagedAgent
+from smolagents import CodeAgent, LiteLLMModel, ManagedAgent,HfApiModel
 from sqltool import sql_engine_db2_asset, sql_engine_db2_carava
 from huggingface_hub import login
 
@@ -42,7 +42,7 @@ sql_engine_db2_carava.description = carava_description
 # )
 
 # model = LiteLLMModel(model_id="groq/llama3-70b-8192")
-model = LiteLLMModel(model_id="qwen/qwen2.5-coder-32b-instruct")
+model = HfApiModel(model_id="qwen/qwen2.5-coder-32b-instruct")
 
 # 初始化 agent
 asset_agent = CodeAgent(
