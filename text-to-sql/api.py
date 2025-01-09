@@ -54,7 +54,7 @@ asset_agent = CodeAgent(
 managed_asset_agent = ManagedAgent(
     agent=asset_agent,
     name="query_asset",
-    description=asset_description + " \n\n 查詢資產(車輛相關數量)資料",
+    description="查詢資產(車輛相關數量)資料",
 )
 
 car_avaliable_agent = CodeAgent(
@@ -66,7 +66,7 @@ car_avaliable_agent = CodeAgent(
 managed_car_avaliable_agent = ManagedAgent(
     agent=car_avaliable_agent,
     name="query_car_avaliable",
-    description=carava_description + " \n\n 查詢車輛動態或可用率相關 , 如配屬數量、借入數量、現有數量、定期數量、段修數量、待料待修數量、無火迴送數量、停用數量、備註",
+    description="查詢車輛動態或可用率相關 , 如配屬數量、借入數量、現有數量、定期數量、段修數量、待料待修數量、無火迴送數量、停用數量、備註",
 )
 
 manager_agent = CodeAgent(
