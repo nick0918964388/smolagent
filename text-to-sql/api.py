@@ -18,7 +18,7 @@ from sqltool import sql_engine_db2
 app = FastAPI()
 
 # 設定 SQL 引擎描述
-sql_engine_db2.description = updated_description
+sql_engine_db2.description = asset_description
 # sql_engine_db2.description = updated_description
 
 # 初始化模型
