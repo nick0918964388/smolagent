@@ -11,4 +11,4 @@ fastapi
 uvicorn
 pydantic
 pyodbc
-ollama-python>=0.1.6
+ollama>=0.1.6
