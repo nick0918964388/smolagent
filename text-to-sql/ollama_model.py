@@ -10,15 +10,14 @@ class OllamaModel:
     async def generate(self, prompt: str, stream: bool = False) -> Union[str, AsyncGenerator[str, None]]:
         try:
             if stream:
-                response = self.client.generate(
+                async for response in self.client.generate(
                     model=self.model_name,
                     prompt=prompt,
                     stream=True
-                )
-                for chunk in response:
-                    yield chunk.response
+                ):
+                    yield response.response
             else:
-                response = self.client.generate(
+                response = await self.client.generate(
                     model=self.model_name,
                     prompt=prompt
                 )
