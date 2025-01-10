@@ -76,16 +76,20 @@ class QueryRequest(BaseModel):
 # 在現有的 QueryRequest 類別後添加新的請求模型
 class OllamaRequest(BaseModel):
     question: str
+    context: str
     stream: Optional[bool] = True
 
 # 添加新的串流生成器函數
-async def ollama_stream_generator(question: str) -> AsyncGenerator[str, None]:
+async def ollama_stream_generator(question: str, context: str) -> AsyncGenerator[str, None]:
     try:
         ollama_model = OllamaModel(model_name=OLLAMA_MODEL_NAME)
         yield "data: {\"type\": \"connected\"}\n\n"
         
-        # 使用 config 中的 prompt template
-        prompt = OLLAMA_PROMPT_TEMPLATE.format(question=question)
+        # 使用 config 中的 prompt template，同時傳入 question 和 context
+        prompt = OLLAMA_PROMPT_TEMPLATE.format(
+            question=question,
+            context=context
+        )
         
         for chunk in ollama_model.stream(prompt):
             chunk_data = {
@@ -109,7 +113,7 @@ async def process_ollama(request: OllamaRequest):
     try:
         if request.stream:
             return StreamingResponse(
-                ollama_stream_generator(request.question),
+                ollama_stream_generator(request.question, request.context),
                 media_type="text/event-stream",
                 headers={
                     'Cache-Control': 'no-cache, no-transform',
@@ -121,7 +125,10 @@ async def process_ollama(request: OllamaRequest):
             )
         else:
             ollama_model = OllamaModel(model_name=OLLAMA_MODEL_NAME)
-            prompt = OLLAMA_PROMPT_TEMPLATE.format(question=request.question)
+            prompt = OLLAMA_PROMPT_TEMPLATE.format(
+                question=request.question,
+                context=request.context
+            )
             response = ollama_model.generate(prompt)
             return {"response": response}
             
