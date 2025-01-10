@@ -35,7 +35,7 @@ sql_engine_db2_carava.description = carava_description
 # model = OllamaModel(model_name="different-model")
 
 # 或使用 Deepseek
-model = LiteLLMModel(model_id="deepseek/deepseek-chat",api_base="https://api.deepseek.com/v1" , api_key=DEEPSEEK_API_KEY)
+model = LiteLLMModel(model_id="deepseek/deepseek-chat",api_base="https://api.deepseek.com/v1" , api_key=DEEPSEEK_API_KEY,temperature=0.0)
 
 # 初始化 agent
 asset_agent = CodeAgent(
