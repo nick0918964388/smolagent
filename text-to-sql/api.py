@@ -2,7 +2,6 @@ import sys
 import json
 from pathlib import Path
 from typing import Optional, AsyncGenerator
-import ollama
 from ollama_model import OllamaModel
 
 # 添加父目錄到 Python 路徑
