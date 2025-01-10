@@ -16,6 +16,7 @@ from smolagents import CodeAgent, LiteLLMModel, ManagedAgent,HfApiModel
 from sqltool import sql_engine_db2_asset, sql_engine_db2_carava
 from huggingface_hub import login
 from config import HF_API_KEY,DEEPSEEK_API_KEY, OLLAMA_MODEL_NAME, OLLAMA_PROMPT_TEMPLATE
+from fastapi.middleware.cors import CORSMiddleware
 # 修改導入路徑
 
 if HF_API_KEY:
@@ -23,6 +24,14 @@ if HF_API_KEY:
 
 # 初始化 FastAPI
 app = FastAPI()
+# 加入 CORS 中間件
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # 在正式環境中應該限制允許的來源
+    allow_credentials=True,
+    allow_methods=["*"],  # 允許所有 HTTP 方法
+    allow_headers=["*"],  # 允許所有 headers
+)
 
 # 設定 SQL 引擎描述
 sql_engine_db2_asset.description = asset_description
@@ -47,6 +56,8 @@ managed_asset_agent = ManagedAgent(
     agent=asset_agent,
     name="query_asset",
     description="查詢資產(車輛相關數量)資料",
+    additional_prompting = "資料庫的Schema: " + asset_description,
+    provide_run_summary = True
 )
 
 car_avaliable_agent = CodeAgent(
@@ -59,6 +70,8 @@ managed_car_avaliable_agent = ManagedAgent(
     agent=car_avaliable_agent,
     name="query_car_avaliable",
     description="查詢車輛本日可用率相關 : 如配屬數量、借入數量、現有數量、定期數量、段修數量、待料待修數量、無火迴送數量、停用數量、備註",
+    additional_prompting = "資料庫的Schema: " + carava_description,
+    provide_run_summary = True
 )
 
 manager_agent = CodeAgent(
