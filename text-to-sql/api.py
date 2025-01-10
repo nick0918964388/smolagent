@@ -15,7 +15,7 @@ from init_carava import carava_description
 from smolagents import CodeAgent, LiteLLMModel, ManagedAgent,HfApiModel
 from sqltool import sql_engine_db2_asset, sql_engine_db2_carava
 from huggingface_hub import login
-from config import HF_API_KEY,DEEPSEEK_API_KEY
+from config import HF_API_KEY,DEEPSEEK_API_KEY, OLLAMA_MODEL_NAME, OLLAMA_PROMPT_TEMPLATE
 # 修改導入路徑
 
 if HF_API_KEY:
@@ -73,6 +73,61 @@ class QueryRequest(BaseModel):
     query: str
     history: Optional[list] = []
 
+# 在現有的 QueryRequest 類別後添加新的請求模型
+class OllamaRequest(BaseModel):
+    question: str
+    stream: Optional[bool] = True
+
+# 添加新的串流生成器函數
+async def ollama_stream_generator(question: str) -> AsyncGenerator[str, None]:
+    try:
+        ollama_model = OllamaModel(model_name=OLLAMA_MODEL_NAME)
+        yield "data: {\"type\": \"connected\"}\n\n"
+        
+        # 使用 config 中的 prompt template
+        prompt = OLLAMA_PROMPT_TEMPLATE.format(question=question)
+        
+        for chunk in ollama_model.stream(prompt):
+            chunk_data = {
+                "type": "message",
+                "content": chunk
+            }
+            yield f"data: {json.dumps(chunk_data, ensure_ascii=False)}\n\n"
+            
+        yield "data: {\"type\": \"done\"}\n\n"
+            
+    except Exception as e:
+        error_data = {
+            "type": "error",
+            "error": str(e)
+        }
+        yield f"data: {json.dumps(error_data, ensure_ascii=False)}\n\n"
+
+# 添加新的 endpoint
+@app.post("/summary")
+async def process_ollama(request: OllamaRequest):
+    try:
+        if request.stream:
+            return StreamingResponse(
+                ollama_stream_generator(request.question),
+                media_type="text/event-stream",
+                headers={
+                    'Cache-Control': 'no-cache, no-transform',
+                    'Connection': 'keep-alive',
+                    'X-Accel-Buffering': 'no',
+                    'Content-Type': 'text/event-stream; charset=utf-8',
+                    'Access-Control-Allow-Origin': '*',
+                }
+            )
+        else:
+            ollama_model = OllamaModel(model_name=OLLAMA_MODEL_NAME)
+            prompt = OLLAMA_PROMPT_TEMPLATE.format(question=request.question)
+            response = ollama_model.generate(prompt)
+            return {"response": response}
+            
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
 async def stream_generator(query: str) -> AsyncGenerator[str, None]:
     try:
         # 發送初始連接建立消息
@@ -128,9 +183,8 @@ async def stream_query(request: QueryRequest):
 @app.post("/query")
 async def process_query(request: QueryRequest):
     try:
-        response = manager_agent.run(request.query, stream=False  )
-
-        return {"response": response ,"logs":asset_agent.logs}
+        response = manager_agent.run(request.query, stream=False)
+        return {"response": response, "logs": asset_agent.logs}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
