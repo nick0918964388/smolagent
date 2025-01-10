@@ -16,13 +16,6 @@ from sqltool import sql_engine_db2_asset, sql_engine_db2_carava
 from huggingface_hub import login
 from config import HF_API_KEY,DEEPSEEK_API_KEY
 # 修改導入路徑
-try:
-    from text_to_sql.config import HF_API_KEY  # 先嘗試從 text-to-sql 目錄導入
-except ImportError:
-    try:
-        from config import HF_API_KEY  # 再嘗試從根目錄導入
-    except ImportError:
-        HF_API_KEY = None  # 如果都找不到，設為 None
 
 if HF_API_KEY:
     login(HF_API_KEY)
