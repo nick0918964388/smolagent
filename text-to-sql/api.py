@@ -2,6 +2,8 @@ import sys
 import json
 from pathlib import Path
 from typing import Optional, AsyncGenerator
+import ollama
+from ollama_model import OllamaModel
 
 # 添加父目錄到 Python 路徑
 sys.path.append(str(Path(__file__).parent.parent))
@@ -27,16 +29,14 @@ app = FastAPI()
 sql_engine_db2_asset.description = asset_description
 sql_engine_db2_carava.description = carava_description
 
-# 初始化模型
-# model = LiteLLMModel(
-#     model_id="ollama/qwen2.5-coder-extra:latest",
-#     api_base="http://ollama.webtw.xyz:11434",
-#     api_key="ollama"    
-# )
-model = LiteLLMModel(model_id="deepseek/deepseek-chat",api_base="https://api.deepseek.com/v1" , api_key=DEEPSEEK_API_KEY)
-# model = LiteLLMModel(model_id="openai/gpt-4o")
-# model = LiteLLMModel(model_id="groq/llama3-70b-8192")
-#model = HfApiModel(model_id="qwen/qwen2.5-coder-32b-instruct")
+# 使用預設模型
+model = OllamaModel()
+
+# 或指定特定模型
+# model = OllamaModel(model_name="different-model")
+
+# 或使用 Deepseek
+# model = LiteLLMModel(model_id="deepseek/deepseek-chat",api_base="https://api.deepseek.com/v1" , api_key=DEEPSEEK_API_KEY)
 
 # 初始化 agent
 asset_agent = CodeAgent(
