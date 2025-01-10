@@ -14,7 +14,7 @@ from init_carava import carava_description
 from smolagents import CodeAgent, LiteLLMModel, ManagedAgent,HfApiModel
 from sqltool import sql_engine_db2_asset, sql_engine_db2_carava
 from huggingface_hub import login
-
+from config import HF_API_KEY,DEEPSEEK_API_KEY
 # 修改導入路徑
 try:
     from text_to_sql.config import HF_API_KEY  # 先嘗試從 text-to-sql 目錄導入
@@ -35,12 +35,12 @@ sql_engine_db2_asset.description = asset_description
 sql_engine_db2_carava.description = carava_description
 
 # 初始化模型
-model = LiteLLMModel(
-    model_id="ollama/qwen2.5-coder-extra:latest",
-    api_base="http://ollama.webtw.xyz:11434",
-    api_key="ollama"    
-)
-
+# model = LiteLLMModel(
+#     model_id="ollama/qwen2.5-coder-extra:latest",
+#     api_base="http://ollama.webtw.xyz:11434",
+#     api_key="ollama"    
+# )
+model = LiteLLMModel(model_id="deepseek/deepseek-chat",api_base="https://api.deepseek.com/v1" , api_key=DEEPSEEK_API_KEY)
 # model = LiteLLMModel(model_id="openai/gpt-4o")
 # model = LiteLLMModel(model_id="groq/llama3-70b-8192")
 #model = HfApiModel(model_id="qwen/qwen2.5-coder-32b-instruct")
