@@ -1,64 +1,39 @@
-import ollama
-from typing import Optional, AsyncGenerator, Union, Any, Dict
-from config import OLLAMA_API_BASE, OLLAMA_MODEL_NAME
+import requests
+import json
+from config import OLLAMA_API_BASE
 
 class OllamaModel:
-    def __init__(self, model_name=None):
-        self.model_name = model_name or OLLAMA_MODEL_NAME
-        self.client = ollama.Client(host=OLLAMA_API_BASE)
-    
-    async def generate_stream(self, prompt: str) -> AsyncGenerator[str, None]:
-        try:
-            async for response in self.client.generate(
-                model=self.model_name,
-                prompt=prompt,
-                stream=True
-            ):
-                yield response.response
-        except Exception as e:
-            print(f"Ollama 生成錯誤: {str(e)}")
-            raise e
+    def __init__(self, model_name="llama2"):
+        self.model_name = model_name
+        self.api_base = OLLAMA_API_BASE
 
-    async def generate_complete(self, prompt: str) -> str:
-        try:
-            response = await self.client.generate(
-                model=self.model_name,
-                prompt=prompt
-            )
-            return response.response
-        except Exception as e:
-            print(f"Ollama 生成錯誤: {str(e)}")
-            raise e
-    
-    async def generate(self, prompt: str, stream: bool = False) -> Union[AsyncGenerator[str, None], str]:
-        if stream:
-            return self.generate_stream(prompt)
-        else:
-            return await self.generate_complete(prompt)
-    
-    async def chat_completion_stream(self, messages) -> AsyncGenerator[Dict, None]:
-        prompt = "\n".join([f"{msg['role']}: {msg['content']}" for msg in messages])
-        async for chunk in self.generate_stream(prompt):
-            yield {
-                "choices": [{
-                    "delta": {"content": chunk},
-                    "finish_reason": None
-                }]
-            }
-
-    async def chat_completion_complete(self, messages) -> Dict:
-        prompt = "\n".join([f"{msg['role']}: {msg['content']}" for msg in messages])
-        response = await self.generate_complete(prompt)
-        return {
-            "choices": [{
-                "message": {"content": response},
-                "finish_reason": "stop"
-            }]
+    def generate(self, prompt: str) -> str:
+        """生成完整回應"""
+        url = f"{self.api_base}/api/generate"
+        data = {
+            "model": self.model_name,
+            "prompt": prompt,
+            "stream": False
         }
-    
-    # 實現與 LiteLLM 相容的介面
-    async def chat_completion(self, messages, stream=False):
-        if stream:
-            return self.chat_completion_stream(messages)
-        else:
-            return await self.chat_completion_complete(messages) 
+        
+        response = requests.post(url, json=data)
+        response.raise_for_status()
+        return response.json()["response"]
+
+    def stream(self, prompt: str):
+        """串流生成回應"""
+        url = f"{self.api_base}/api/generate"
+        data = {
+            "model": self.model_name,
+            "prompt": prompt,
+            "stream": True
+        }
+        
+        response = requests.post(url, json=data, stream=True)
+        response.raise_for_status()
+        
+        for line in response.iter_lines():
+            if line:
+                json_response = json.loads(line)
+                if "response" in json_response:
+                    yield json_response["response"] 
